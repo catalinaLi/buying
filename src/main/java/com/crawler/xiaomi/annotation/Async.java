@@ -1,4 +1,4 @@
-package com.crawler.annotation;
+package com.crawler.xiaomi.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,7 +7,8 @@ import java.lang.annotation.Target;
 
 /**
  * @Author: lllx
- * @Description:
+ * @Description: 异步执行
+ *  方法注解，可以和@Singleton @Stop 组合使用
  * @Date: Created on 11:50 2020/4/8
  * @Modefied by:
  */

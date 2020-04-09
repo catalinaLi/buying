@@ -1,6 +1,6 @@
-package com.crawler.annotation;
+package com.crawler.xiaomi.annotation;
 
-import com.crawler.enums.TimingType;
+import com.crawler.xiaomi.enums.TimingType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,7 +10,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: lllx
- * @Description:
+ * @Description: 定时任务
+ * 方法注解，可以和@Singleton 组合使用
  * @Date: Created on 11:52 2020/4/8
  * @Modefied by:
  */

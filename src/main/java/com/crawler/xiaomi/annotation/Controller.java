@@ -1,4 +1,4 @@
-package com.crawler.annotation;
+package com.crawler.xiaomi.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -8,13 +8,13 @@ import java.lang.annotation.Target;
 
 /**
  * @Author: lllx
- * @Description:
- * @Date: Created on 10:59 2020/4/8
+ * @Description: 服务名注解
+ * @Date: Created on 10:53 2020/4/8
  * @Modefied by:
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-public @interface Service {
-    String value() default "";//服务名称
+public @interface Controller {
+    String value() default "";//服务名
 }

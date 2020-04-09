@@ -1,4 +1,4 @@
-package com.crawler.enums;
+package com.crawler.xiaomi.enums;
 
 /**
  * @Author: lllx
