@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Timing {
-    TimingType TYPE();
+    TimingType type();
 
     int initialDelay();
 

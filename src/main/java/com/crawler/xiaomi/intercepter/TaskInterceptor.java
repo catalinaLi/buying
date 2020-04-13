@@ -1,6 +1,13 @@
 package com.crawler.xiaomi.intercepter;
 
+import com.crawler.xiaomi.annotation.Async;
+import com.crawler.xiaomi.annotation.Retry;
+import com.crawler.xiaomi.annotation.Retry2;
 import com.crawler.xiaomi.annotation.Singleton;
+import com.crawler.xiaomi.annotation.Stop;
+import com.crawler.xiaomi.annotation.Timing;
+import com.crawler.xiaomi.enums.TimingType;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
@@ -8,7 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 
 /**
  * @Author: lllx
@@ -22,6 +31,7 @@ public class TaskInterceptor implements MethodInterceptor {
 
     private static Map<String,Boolean> singletonMap = Maps.newHashMap();
 
+    private Map<String,ScheduledFuture<?>> futures = Maps.newHashMap();
     /**
      * 获取所有的单例方法
      * @param clazz
@@ -52,7 +62,7 @@ public class TaskInterceptor implements MethodInterceptor {
             return null;
         }
         //重试方法
-        /*if(method.getAnnotation(Retry.class)!=null){
+        if(method.getAnnotation(Retry.class)!=null){
             return retryTask(obj,method,args,proxy);
         }
         //重试方法2
@@ -75,10 +85,29 @@ public class TaskInterceptor implements MethodInterceptor {
         //异步方法
         if(method.getAnnotation(Async.class)!=null){
             return asyncTask(obj,method,args,proxy);
-        }*/
+        }
 
         //同步方法
         return proxy.invoke(obj,args);
+    }
+
+    private Object asyncTask(Object obj, Method method, Object[] args, MethodProxy proxy) {
+        Async async = method.getAnnotation(Async.class);
+        for(int i =0;i<async.value();i++){
+            MyThreadPool.execute(() -> {
+                try {
+                    proxy.invokeSuper(obj, args);
+                } catch (Throwable e) {
+                    logger.error("异步方法 :{} 发生错误:{}",method.getName(),e.getMessage());
+                }
+            });
+            try {
+                Thread.sleep(async.interval());
+            } catch (InterruptedException e) {
+
+            }
+        }
+        return null;
     }
 
     /**
@@ -100,4 +129,79 @@ public class TaskInterceptor implements MethodInterceptor {
             return true;
         }
     }
+
+    private Object retryTask(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+        Retry retry = method.getAnnotation(Retry.class);
+        int count = 0;
+        Throwable result = new RuntimeException("retry error");
+        while(count<=retry.count()){
+            if(count!=0){
+                logger.info("重试:{},方法:{},参数:{}",count,method.getName(),args);
+            }
+            try {
+                return proxy.invokeSuper(obj, args);
+            } catch (Throwable e) {
+                result = e;
+                logger.error("error:{},msg:{}",e.getClass().getName(),e.getMessage());
+                List<Class<?>> clazzs = Lists.newArrayList(retry.retException());
+                if(!clazzs.contains(e.getClass())){
+                    throw e;
+                }
+            }
+            count++;
+        }
+        throw result;
+    }
+
+    private Object retryTask2(Object obj, Method method, Object[] args, MethodProxy proxy) {
+        Retry2 retry = method.getAnnotation(Retry2.class);
+        Object result = null;
+        while(!retry.success().equals(result)){
+            try {
+                Thread.sleep(retry.interval());
+                result = proxy.invokeSuper(obj, args);
+            } catch (Throwable e) {
+                logger.error("error:{},msg:{}",e.getClass().getName(),e.getMessage());
+            }
+        }
+        return result;
+    }
+
+
+    private Object timingTask(Object obj, Method method, Object[] args, MethodProxy proxy) {
+        Timing timing = method.getAnnotation(Timing.class);
+        Runnable runnable = () -> {
+            try {
+                proxy.invokeSuper(obj, args);
+            } catch (Throwable e) {
+                logger.error("定时任务:{} 发生错误:{}",method.getName(),e.getMessage());
+            }
+        };
+        ScheduledFuture<?> future = null;
+        if(timing.type() == TimingType.FIXED_DELAY){
+            future = MyThreadPool.scheduleWithFixedDelay(runnable, timing.initialDelay(), timing.period(), timing.unit());
+        }else{
+            future = MyThreadPool.scheduleAtFixedRate(runnable, timing.initialDelay(), timing.period(), timing.unit());
+        }
+        futures.put(method.getName(), future);
+        return null;
+    }
+
+    private void stopTimingTask(Object obj, Method method, Object[] args, MethodProxy proxy) {
+        String[] methods = method.getAnnotation(Stop.class).methods();
+        for(String methodName : methods){
+            ScheduledFuture<?> futureByName = futures.get(methodName);
+            if(futureByName!=null){
+                synchronized (futureByName) {
+                    if(!futureByName.isCancelled()){
+                        logger.info("定时任务:{} 停止.",methodName);
+                    };
+                    futureByName.cancel(false);
+                }
+
+            }
+        }
+    }
+
+
 }
