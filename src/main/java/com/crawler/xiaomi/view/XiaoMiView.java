@@ -26,8 +26,8 @@ public class XiaoMiView extends AbstractXiaoMiFunction{
     private JTextField nameText;//商品链接
     private JButton parseButton;//搜索按钮
     private JLabel optionLable;//自定义选项
-    private JComboBox<String> option1;//下拉框1
-    private JComboBox<String> option2;//下拉框2
+    private JComboBox<String> option1;//下拉框1版本
+    private JComboBox<String> option2;//下拉框2颜色
     private JLabel buyTime;//抢购时间
     private JTextField buyTimeText;//抢购时间框
     private JLabel duration;//抢购时长
@@ -180,9 +180,15 @@ public class XiaoMiView extends AbstractXiaoMiFunction{
         quitButton.setSize(80, 30);
         quitButton.setText("退出");
         panel.add(quitButton);
-
         jframe.add(panel);
+
+        parseButton.addActionListener(getParseFunction());
+
         jframe.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        new XiaoMiView();
     }
 
     @Override

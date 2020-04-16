@@ -1,6 +1,7 @@
 package com.crawler.xiaomi.manage;
 
 import com.crawler.xiaomi.annotation.Controller;
+import com.crawler.xiaomi.annotation.Resource;
 import com.crawler.xiaomi.annotation.Service;
 import com.crawler.xiaomi.intercepter.TaskInterceptor;
 import com.google.common.collect.Maps;
@@ -33,13 +34,13 @@ public class ServiceFactory {
         Set<Class<?>> controllerClasss = reflections.getTypesAnnotatedWith(Controller.class);
         Set<Class<?>> serviceClasss = reflections.getTypesAnnotatedWith(Service.class);
         serviceClasss.addAll(controllerClasss);
-        for (Class<?> classs : serviceClasss) {
-            createInstance(classs);
+        for (Class<?> clazz : serviceClasss) {
+            createInstance(clazz);
         }
 
     }
     private static void createInstance(Class<?> clazz) {
-        if (!serviceMap.containsKey(clazz.getName())) {
+        if (serviceMap.containsKey(clazz.getName())) {
             return;
         }
         if (clazz.getAnnotation(Controller.class) == null && clazz.getAnnotation(Service.class) == null) {
@@ -57,11 +58,13 @@ public class ServiceFactory {
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields) {
                 field.setAccessible(true);
-                if (!serviceMap.containsKey(field.getType().getName())) {
-                    createInstance(field.getClass());
+                if(field.getAnnotation(Resource.class) != null){
+                    if(serviceMap.get(field.getType().getName())==null){
+                        createInstance(field.getType());
+                    }
+                    Object object = serviceMap.get(field.getType().getName());
+                    field.set(create, object);
                 }
-                Object ob = serviceMap.get(field.getType().getName());
-                field.set(create,ob);
             }
             serviceMap.put(clazz.getName(), create);
             logger.info("{}初始化创建成功",clazz.getName());

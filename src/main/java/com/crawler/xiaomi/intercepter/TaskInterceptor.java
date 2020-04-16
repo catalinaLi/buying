@@ -88,7 +88,7 @@ public class TaskInterceptor implements MethodInterceptor {
         }
 
         //同步方法
-        return proxy.invoke(obj,args);
+        return proxy.invokeSuper(obj,args);
     }
 
     private Object asyncTask(Object obj, Method method, Object[] args, MethodProxy proxy) {
@@ -117,15 +117,14 @@ public class TaskInterceptor implements MethodInterceptor {
      */
     private boolean checkReq(Method method) {
         synchronized (method) {
-            if (singletonMap.containsKey(method.getName())) {
-                if (singletonMap.get(method.getName())) {
+            if(singletonMap.get(method.getName())!=null){
+                if(singletonMap.get(method.getName())){
                     singletonMap.put(method.getName(), false);
                     return true;
                 }
-                logger.info("{}不允许多次调用",method.getName());
+                logger.error("方法:{} 不允许多次调用",method.getName());
                 return false;
             }
-            singletonMap.put(method.getName(), true);
             return true;
         }
     }

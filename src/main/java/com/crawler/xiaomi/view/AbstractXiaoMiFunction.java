@@ -1,11 +1,18 @@
 package com.crawler.xiaomi.view;
 
+import com.crawler.xiaomi.controller.XiaoMiController;
+import com.crawler.xiaomi.manage.Config;
+import com.crawler.xiaomi.manage.ServiceFactory;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 /**
  * @Author: lllx
@@ -14,6 +21,10 @@ import javax.swing.JTextField;
  * @Modefied by:
  */
 public abstract class AbstractXiaoMiFunction {
+
+    //小米主服务
+    private static  XiaoMiController xiaoMiController = ServiceFactory.getService(XiaoMiController.class);
+
     /**
      * 窗体控件
      */
@@ -38,6 +49,42 @@ public abstract class AbstractXiaoMiFunction {
     public abstract JButton getPauseButton();//停止按钮
     public abstract JButton getQuitButton();//退出按钮
 
+    /**
+     * 查询商品按钮
+     * @return
+     */
+    public ActionListener getParseFunction() {
+        return new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = getNameText().getText().trim();
+                if(name.length()==0){
+                    return;
+                }
+                String errmsg = xiaoMiController.searchGoods(name);
+                if(errmsg!=null){
+                    getNameText().setText(name+errmsg);
+                    return;
+                }
+                getJframe().setTitle(Config.goodsConfig.getName());
+                getNameText().setText(Config.goodsConfig.getName());
+                List<String> version = Config.goodsConfig.getVersion();
+                getOption1().removeAll();
+                getOption1().addItem("默认");
+                for(String s:version){
+                    getOption1().addItem(s);
+                }
+                getOption1().setSelectedIndex(0);
 
+                List<String> color = Config.goodsConfig.getColor();
+                getOption2().removeAll();
+                getOption2().addItem("默认");
+                for(String s:color){
+                    getOption2().addItem(s);
+                }
+                getOption2().setSelectedIndex(0);
+            }
+        };
+    }
 
 }
