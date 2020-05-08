@@ -1,7 +1,6 @@
 package com.crawler.xiaomi.pojo;
 
 import com.alibaba.fastjson.JSON;
-import org.apache.http.cookie.Cookie;
 
 import java.util.List;
 

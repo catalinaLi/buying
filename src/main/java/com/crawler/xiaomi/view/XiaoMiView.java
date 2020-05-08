@@ -5,6 +5,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
@@ -40,6 +41,7 @@ public class XiaoMiView extends AbstractXiaoMiFunction{
     private JButton startButton;//开始按钮
     private JButton pauseButton;//停止按钮
     private JButton quitButton;//退出按钮
+    private JTextArea logText;//日志展示框
 
     public XiaoMiView() {
         FontUIResource fontRes = new FontUIResource(new Font(null, Font.PLAIN, 13));
@@ -51,13 +53,14 @@ public class XiaoMiView extends AbstractXiaoMiFunction{
             }
         }
         //窗体面板
-        jframe = new JFrame("测试窗口");
+        jframe = new JFrame("小米抢购");
         jframe.setSize(650, 375);
         jframe.setLocationRelativeTo(null);
         jframe.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         // 创建内容面板，使用绝对值布局
         panel = new JPanel(null);
+        //描述
         name = new JLabel();
         name.setText("商品名称/链接:");
         name.setBounds(20, 30,100, 20);
@@ -85,8 +88,8 @@ public class XiaoMiView extends AbstractXiaoMiFunction{
         //下拉框1
         option1 = new JComboBox<>();
         option1.addItem("默认");
-        option1.addItem("苹果");
-        option1.setSelectedIndex(0);
+        //option1.addItem("苹果");
+        //option1.setSelectedIndex(0);
         option1.setLocation(120,66);
         option1.setSize(235, 20);
         panel.add(option1);
@@ -94,7 +97,7 @@ public class XiaoMiView extends AbstractXiaoMiFunction{
         //下拉框2
         option2 = new JComboBox<>();
         option2.addItem("默认");
-        option2.addItem("香蕉");
+        //option2.addItem("香蕉");
         option2.setLocation(385,66);
         option2.setSize(235, 20);
         panel.add(option2);
@@ -180,15 +183,28 @@ public class XiaoMiView extends AbstractXiaoMiFunction{
         quitButton.setSize(80, 30);
         quitButton.setText("退出");
         panel.add(quitButton);
+
+        //日志框
+        logText = new JTextArea();
+        logText.setLocation(0, 345);
+        logText.setSize(650, 345);
+        logText.setVisible(false);
+        logText.setLineWrap(true);
+        panel.add(logText);
+
         jframe.add(panel);
-
-        parseButton.addActionListener(getParseFunction());
-
         jframe.setVisible(true);
-    }
 
-    public static void main(String[] args) {
-        new XiaoMiView();
+        parseButton.addActionListener(getParseFunction());//查询商品事件
+        quitButton.addActionListener(getQuitFunction());//离开事件
+        startButton.addActionListener(getStartFunction());//开始事件
+        pauseButton.addActionListener(getPauseFunction());//停止事件
+        hideButton.addActionListener(getHideFunction());//日志框事件
+
+        /**
+         * 打开视图
+         */
+        openView();
     }
 
     @Override
@@ -289,5 +305,10 @@ public class XiaoMiView extends AbstractXiaoMiFunction{
     @Override
     public JButton getQuitButton() {
         return quitButton;
+    }
+
+    @Override
+    public JTextArea getLogText() {
+        return logText;
     }
 }
