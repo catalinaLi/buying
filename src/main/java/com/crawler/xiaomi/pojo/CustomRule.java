@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat;
 public class CustomRule {
 	
 	//抢购时间
-	private long buyTime;//提前3.5s,考虑时间误差
+	private long buyTime; //提前3.5s,考虑时间误差
 	
 	//抢购截止时间
 	private long endTime;
