@@ -15,14 +15,18 @@ import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -34,15 +38,42 @@ import java.util.List;
 @Service
 public class HttpService {
 
+    private static ChromeDriverService service;
+
+    private static WebDriver webDriver;
+
     private static Logger logger = LoggerFactory.getLogger(HttpService.class);
 
-    public static WebDriver getChromeDriver() throws IOException {
+    public HttpService() {
+        webDriver = getChromeDriver();
+    }
+
+    public static WebDriver getChromeDriver() {
         System.setProperty("webdriver.chrome.driver", FilePathManage.chromeDriver);
-        // 创建一个 ChromeDriver 的接口，用于连接 Chrome（chromedriver.exe 的路径可以任意放置，只要在newFile（）的时候写入你放的路径即可）
-        service = new ChromeDriverService.Builder().usingDriverExecutable(new File("D:\\chromedriver\\qd-chromedriver_pc18\\qd-chromedriver_pc18\\chromedriver.exe")) .usingAnyFreePort().build();
-        service.start();
-        // 创建一个 Chrome 的浏览器实例
-        return new RemoteWebDriver(service.getUrl(), DesiredCapabilities.chrome());
+        ChromeOptions options= new ChromeOptions();
+//        options.addArguments("blink-settings=imagesEnabled=false");  //禁止加载图片
+//        options.addArguments("--disable-gpu");//禁止gpu加速，否则在linux下会有bug
+//        options.addArguments("--no-sandbox");//linux启动必须
+//        options.addArguments("--window-size=1366,768");//指定浏览器分辨率
+//        options.addArguments("--hide-scrollbars");//隐藏滚动条, 应对一些特殊页面
+        return new ChromeDriver(options);
+    }
+
+    public static PhantomJSDriver getPhantomJSDriver(){
+        //设置必要参数
+        DesiredCapabilities dcaps = new DesiredCapabilities();
+        //ssl证书支持
+        dcaps.setCapability("acceptSslCerts", true);
+        //截屏支持
+        dcaps.setCapability("takesScreenshot", false);
+        //css搜索支持
+        dcaps.setCapability("cssSelectorsEnabled", true);
+        //js支持
+        dcaps.setJavascriptEnabled(true);
+        //驱动支持
+        dcaps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, FilePathManage.exe);
+
+        return new PhantomJSDriver(dcaps);
     }
 
     /**

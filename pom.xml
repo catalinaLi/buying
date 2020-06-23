@@ -37,11 +37,11 @@
 
 
     <!-- 谷歌common包 -->
-    <dependency>
+    <!--<dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>18.0</version>
-    </dependency>
+    </dependency>-->
 
     <!-- 扫描class -->
     <dependency>
@@ -67,6 +67,12 @@
       <artifactId>selenium-java</artifactId>
       <version>3.141.59</version>
     </dependency>
+    <dependency>
+      <groupId>com.codeborne</groupId>
+      <artifactId>phantomjsdriver</artifactId>
+      <version>1.4.4</version>
+    </dependency>
+    <!--junit-->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
