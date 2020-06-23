@@ -36,6 +36,15 @@ public class HttpService {
 
     private static Logger logger = LoggerFactory.getLogger(HttpService.class);
 
+    public static WebDriver getChromeDriver() throws IOException {
+        System.setProperty("webdriver.chrome.driver", FilePathManage.chromeDriver);
+        // 创建一个 ChromeDriver 的接口，用于连接 Chrome（chromedriver.exe 的路径可以任意放置，只要在newFile（）的时候写入你放的路径即可）
+        service = new ChromeDriverService.Builder().usingDriverExecutable(new File("D:\\chromedriver\\qd-chromedriver_pc18\\qd-chromedriver_pc18\\chromedriver.exe")) .usingAnyFreePort().build();
+        service.start();
+        // 创建一个 Chrome 的浏览器实例
+        return new RemoteWebDriver(service.getUrl(), DesiredCapabilities.chrome());
+    }
+
     /**
      * 执行phantomjs
      * @param jsPath
