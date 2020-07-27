@@ -242,7 +242,7 @@ public class XiaoMiService {
      */
     public String searchGoods(String name) {
         if (name.startsWith("http")) {
-            if(!name.startsWith("https://item.mi.com/product/")){
+            if(!name.contains("product") && !name.contains("id")){
                 return "(不支持该链接)";
             }
             Config.goodsConfig = queryGoodsInfo(name);
@@ -264,7 +264,7 @@ public class XiaoMiService {
      */
     private GoodsConfig queryGoodsInfo(String url) {
         try{
-            String goodsId = url.substring(url.indexOf("product")+8,url.indexOf("html")-1);
+            String goodsId = url.split("=")[1];
             String goodInfoUrl = "https://order.mi.com/product/get?jsonpcallback=proget2callback&product_id="
                     +goodsId+"&_="+System.currentTimeMillis();
             String ret = httpService.getXiaomi(goodInfoUrl, url);

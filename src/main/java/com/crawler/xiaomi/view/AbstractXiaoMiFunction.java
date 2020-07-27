@@ -7,6 +7,7 @@ import com.crawler.xiaomi.manage.StatusManage;
 import com.crawler.xiaomi.pojo.CustomRule;
 import com.crawler.xiaomi.pojo.GoodsInfo;
 import com.crawler.xiaomi.pojo.User;
+import com.crawler.xiaomi.service.HttpService;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -56,7 +57,7 @@ public abstract class AbstractXiaoMiFunction {
     public abstract JButton getStartButton();//开始按钮
     public abstract JButton getPauseButton();//停止按钮
     public abstract JButton getQuitButton();//退出按钮
-    public abstract JTextArea getLogText();//退出按钮
+    public abstract JTextArea getLogText();//日志输出
 
     /**
      * 查询商品按钮
@@ -262,6 +263,9 @@ public abstract class AbstractXiaoMiFunction {
             public void actionPerformed(ActionEvent e) {
                 int result = JOptionPane.showConfirmDialog(getJframe(), "确定要退出吗？");
                 if (result == JOptionPane.YES_OPTION) {
+                    if (HttpService.driver != null) {
+                        HttpService.driver.quit();
+                    }
                     System.exit(0);
                 }
             }

@@ -35,14 +35,6 @@
       <version>1.7.2</version>
     </dependency>
 
-
-    <!-- 谷歌common包 -->
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>18.0</version>
-    </dependency>
-
     <!-- 扫描class -->
     <dependency>
       <groupId>org.reflections</groupId>
@@ -53,6 +45,10 @@
           <groupId>javassist</groupId>
           <artifactId>javassist</artifactId>
         </exclusion>
+        <exclusion>
+          <artifactId>guava</artifactId>
+          <groupId>com.google.guava</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <!-- cglib动态代理 -->
@@ -61,6 +57,24 @@
       <artifactId>cglib</artifactId>
       <version>3.2.5</version>
     </dependency>
+    <!-- selenium -->
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>3.141.59</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>selenium-remote-driver</artifactId>
+          <groupId>org.seleniumhq.selenium</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.codeborne</groupId>
+      <artifactId>phantomjsdriver</artifactId>
+      <version>1.4.4</version>
+    </dependency>
+    <!--junit-->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

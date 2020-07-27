@@ -27,7 +27,7 @@ public class FilePathManage {
      */
     public static String goodsInfoDb= binPath + File.separator + "goodsInfo.db";
 
-
+    public static String chromeDriver= binPath + File.separator + "chromedriver.exe";
 
     public static String loginJs = binPath + File.separator + "login.js";
 

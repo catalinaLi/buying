@@ -15,6 +15,14 @@ import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +43,45 @@ import java.util.List;
 public class HttpService {
 
     private static Logger logger = LoggerFactory.getLogger(HttpService.class);
+
+    public static WebDriver driver = null;
+
+    public HttpService() {
+        driver = getChromeDriver();
+    }
+
+    public static WebDriver getChromeDriver(){
+        System.setProperty(ChromeDriverService.CHROME_DRIVER_EXE_PROPERTY, FilePathManage.chromeDriver);
+        ChromeOptions options= new ChromeOptions();
+        return new ChromeDriver(options);
+    }
+
+    public static PhantomJSDriver getPhantomJSDriver(){
+        //设置必要参数
+        DesiredCapabilities dcaps = new DesiredCapabilities();
+        //ssl证书支持
+        dcaps.setCapability("acceptSslCerts", true);
+        //截屏支持
+        dcaps.setCapability("takesScreenshot", false);
+        //css搜索支持
+        dcaps.setCapability("cssSelectorsEnabled", true);
+        //js支持
+        dcaps.setJavascriptEnabled(true);
+        //驱动支持
+        dcaps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, FilePathManage.exe);
+
+        return new PhantomJSDriver(dcaps);
+    }
+
+    public String login() {
+        driver.get("https://account.xiaomi.com/pass/serviceLogin?callback=https%3A%2F%2Forder.mi.com%2Flogin%2Fcallback%3Ffollowup%3Dhttps%253A%252F%252Fwww.mi.com%252Fbuy%252Fdetail%253Fproduct_id%253D10000239%26sign%3DODViYmY2MDdhZmFlYmY0NzIyODQ4NjE4ZmQwMzZlYTYzZjMzMWQzMQ%2C%2C&sid=mi_eshop&_bannerBiz=mistore&_qrsize=180");
+        driver.findElement(By.id("username")).sendKeys("392235464@qq.com");
+        driver.findElement(By.id("pwd")).sendKeys("lxln4425257");
+        driver.findElement(By.id("login-button")).click();
+
+        return driver.manage().getCookies().toString();
+    }
+
 
     /**
      * 执行phantomjs
