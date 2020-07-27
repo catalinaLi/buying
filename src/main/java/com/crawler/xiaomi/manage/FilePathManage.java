@@ -14,7 +14,7 @@ public class FilePathManage {
 
     public static String configPath=System.getProperty("user.dir")+File.separator+"config";
 
-
+    public static String chromeDriver=System.getProperty("user.dir")+File.separator+"chromedriver-mac";
 
     public static String exe = binPath + File.separator  + "phantomjs.exe";
 
